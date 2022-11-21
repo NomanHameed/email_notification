@@ -1,6 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ContactController;
+use App\Http\Controllers\HomeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,9 +16,16 @@ use Illuminate\Support\Facades\Route;
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return redirect('/login');
 });
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
+Route::get('/home', [HomeController::class, 'index'])->name('home');
+Route::get('/contacts', [ContactController::class, 'index'])->name('contacts');
+
+Route::get('/import_contact', [ContactController::class, 'getImport'])->name('import');
+Route::post('/import_parse', [ContactController::class, 'parseImport'])->name('import_parse');
+Route::post('/import_process', [ContactController::class, 'processImport'])->name('import_process');
+
+
