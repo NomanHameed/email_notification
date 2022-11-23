@@ -2,12 +2,10 @@
 
 namespace App\Http\Controllers;
 
-use App\Imports\ContactsImport;
+use App\Jobs\ImportCsv;
 use App\Jobs\SendEmailJob;
 use App\Models\Contact;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Log;
-use Maatwebsite\Excel\Facades\Excel;
 
 class ContactController extends Controller
 {
@@ -32,8 +30,10 @@ class ContactController extends Controller
         $validated = $request->validate([
             'file' => 'required|mimes:csv',
         ]);
-        Excel::import(new ContactsImport(), $request->file('file'));
-        return redirect()->route('contacts')->with('success', 'Contacts Imported Successfully');
+        $file = $request->file('file');
+        $path = $file->storeAs('csv', \Str::random(40) . '.' . $file->getClientOriginalExtension());
+        ImportCsv::dispatch($path);
+        return redirect()->back()->with('success', 'Contacts Imported Successfully');
     }
 
     /**

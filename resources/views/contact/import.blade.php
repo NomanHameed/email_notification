@@ -6,6 +6,15 @@
             <div class="card-header">
                 Email List Import
             </div>
+            @if(session()->has('success'))
+                <div class="alert alert-success">
+                    {{ session()->get('success') }}
+                </div>
+            @endif
+            @if($errors->any())
+                {!! implode('', $errors->all('<div class="alert alert-danger">:message</div>')) !!}
+            @endif
+
             <div class="card-body">
                 <h5 class="card-title">CSV Import</h5>
                 <div class="container">
