@@ -22,10 +22,12 @@ Route::get('/', function () {
 Auth::routes();
 
 Route::get('/home', [HomeController::class, 'index'])->name('home');
-Route::get('/contacts', [ContactController::class, 'index'])->name('contacts');
+Route::get('/contact', [ContactController::class, 'index'])->name('contacts');
+Route::delete('/contact/{id}', [ContactController::class, 'destroy'])->name('contacts.destroy');
 
 Route::get('/import_contact', [ContactController::class, 'getImport'])->name('import');
-Route::post('/import_parse', [ContactController::class, 'parseImport'])->name('import_parse');
 Route::post('/import_process', [ContactController::class, 'processImport'])->name('import_process');
 
+Route::get('send-email', [ContactController::class, 'listView'])->name('send.listView');
+Route::post('send-email', [ContactController::class, 'send'])->name('send.mail');
 

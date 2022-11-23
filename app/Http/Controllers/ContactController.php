@@ -2,8 +2,12 @@
 
 namespace App\Http\Controllers;
 
+use App\Imports\ContactsImport;
+use App\Jobs\SendEmailJob;
 use App\Models\Contact;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ContactController extends Controller
 {
@@ -18,74 +22,18 @@ class ContactController extends Controller
         return view('contact.contacts', compact('contacts',$contacts));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-
     public function getImport()
     {
         return view('contact.import');
     }
 
-    public function parseImport(CsvImportRequest $request)
+    public function processImport(Request $request)
     {
-        $path = $request->file('csv_file')->getRealPath();
-        $data = array_map('str_getcsv', file($path));
-        $csv_data = array_slice($data, 0, 2);
-        dd($csv_data);
-        return view('import_fields', compact('csv_data'));
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  \App\Models\Contact  $contact
-     * @return \Illuminate\Http\Response
-     */
-    public function show(Contact $contact)
-    {
-        //
-    }
-
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  \App\Models\Contact  $contact
-     * @return \Illuminate\Http\Response
-     */
-    public function edit(Contact $contact)
-    {
-        //
-    }
-
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  \App\Models\Contact  $contact
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, Contact $contact)
-    {
-        //
+        $validated = $request->validate([
+            'file' => 'required|mimes:csv',
+        ]);
+        Excel::import(new ContactsImport(), $request->file('file'));
+        return redirect()->route('contacts')->with('success', 'Contacts Imported Successfully');
     }
 
     /**
@@ -94,8 +42,28 @@ class ContactController extends Controller
      * @param  \App\Models\Contact  $contact
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Contact $contact)
+    public function destroy($id)
     {
-        //
+        $contact = Contact::find($id);
+        $contact->delete();
+        return redirect()->back()->with('success','Delete Successflly');
+    }
+
+    public function listView()
+    {
+        $contacts = Contact::all();
+        return view('contact.send_mail', compact('contacts'));
+    }
+
+    public function send(Request $request){
+        $validated = $request->validate([
+            'template' => 'required',
+            'check' => 'required',
+        ]);
+        $check = $request->all();
+        if(count($check['check'])> 0){
+            SendEmailJob::dispatch($check);
+        }
+        return redirect()->back()->with(['success'=>'Mail Send Successfully!!']);
     }
 }
