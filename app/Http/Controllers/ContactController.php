@@ -17,7 +17,7 @@ class ContactController extends Controller
     public function index()
     {
         $contacts = Contact::get();
-        return view('contact.contacts', compact('contacts',$contacts));
+        return view('contact.contacts', compact('contacts'));
     }
 
     public function getImport()
