@@ -87,6 +87,7 @@
                                 Dashboard
                             </a>
                             <div class="sb-sidenav-menu-heading">Contacts Area</div>
+                            <a class="nav-link" href="{{ route('set_mailer.index') }}">Email Setting</a>
                             <a class="nav-link" href="{{ route('import') }}">Import Email List</a>
                             <a class="nav-link" href="{{ route('contacts') }}">Contact List</a>
                             <a class="nav-link" href="{{ route('send.listView') }}">Send Notificatioin</a>

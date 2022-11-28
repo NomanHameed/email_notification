@@ -6,4 +6,8 @@ window.addEventListener('DOMContentLoaded', event => {
     if (datatablesSimple) {
         new simpleDatatables.DataTable(datatablesSimple);
     }
+    const datatablesMailer = document.getElementById('mailer-setting');
+    if (datatablesMailer) {
+        new simpleDatatables.DataTable(datatablesMailer);
+    }
 });
